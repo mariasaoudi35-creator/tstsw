@@ -3,30 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Weekly Hub - Cockpit 360°</title>
-  <!-- Chart.js standard pour le graphique de charge -->
-  <script src="https://jsdelivr.net"></script>
   <style>
-    /* Reset & Styles de base - Thème Bleu Clair */
+    /* Reset & Styles Système - Thème Bleu Clair - AUCUN LIEN EXTERNE OBLIGATOIRE */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #f0f7ff; color: #1e293b; padding-bottom: 60px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f7ff; color: #1e293b; padding-bottom: 60px; }
     
-    /* Navigation */
+    /* Barre de navigation */
     .navbar { background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%); color: white; padding: 15px 25px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(2,132,199,0.15); }
     @media (min-width: 768px) { .navbar { flex-direction: row; } }
     .nav-title { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
     .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
     
-    /* Boutons Onglets Réactifs */
-    .tab-btn { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    /* Onglets de navigation */
+    .tab-btn { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 10px 18px; font-size: 0.85rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
     .tab-btn:hover { background: rgba(255, 255, 255, 0.25); }
     .tab-btn.active { background: white; color: #1d4ed8; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     
-    /* Structures de contenu */
+    /* Conteneurs */
     .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     
-    /* Composants Visuels */
+    /* Alertes & KPIs */
     .banner { padding: 15px; border-radius: 16px; background-color: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; margin-bottom: 20px; font-weight: 600; font-size: 0.9rem; }
     .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
     @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
@@ -38,12 +36,20 @@
     @media (min-width: 1024px) { .dashboard-row { grid-template-columns: 2fr 1fr; } }
     .card-block { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e0f2fe; }
     
+    /* Graphique CSS Local Autonome */
+    .custom-chart { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+    .chart-bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+    .chart-label { width: 120px; font-weight: 600; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .chart-bar-wrapper { flex-grow: 1; background-color: #f1f5f9; height: 24px; border-radius: 6px; overflow: hidden; position: relative; }
+    .chart-bar-fill { background-color: #0284c7; height: 100%; width: 0%; transition: width 0.4s ease; }
+    .chart-count { width: 30px; font-weight: 700; text-align: right; color: #64748b; }
+
     /* Formulaires */
     .form-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e0f2fe; margin-bottom: 20px; }
     .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
     .input-field { width: 100%; padding: 10px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 10px; background-color: #f8fafc; outline: none; }
-    .btn { border: none; padding: 10px 18px; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer; color: white; background-color: #0284c7; transition: background 0.2s; }
+    .btn { border: none; padding: 10px 18px; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer; color: white; background-color: #0284c7; transition: background 0.2s; text-align: center; }
     .btn:hover { background-color: #0369a1; }
     
     /* Tableaux */
@@ -52,12 +58,12 @@
     .data-table th { background-color: #f8fafc; padding: 12px; color: #64748b; border-bottom: 1px solid #e2e8f0; }
     .data-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
     .badge { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background-color: #e0f2fe; color: #0369a1; }
-    #toast { display: none; position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; z-index: 1000; }
+    #toast { display: none; position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; z-index: 1000; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
 
-  <!-- BARRE DE NAVIGATION AVEC APPEL SMART DES ONGLETS -->
+  <!-- BARRE DE NAVIGATION STANDARD SÉCURISÉE -->
   <nav class="navbar">
     <div class="nav-title">🚀 <span>Weekly Hub</span></div>
     <div class="nav-tabs">
@@ -72,7 +78,7 @@
   <main class="container">
     <div id="toast"></div>
 
-    <!-- MODULE 1 & 3: DASHBOARD -->
+    <!-- MODULE: DASHBOARD -->
     <section id="dashboard" class="tab-content active">
       <div class="banner">🎯 Analyse de la Tendance : <span id="txtTendance">Trajectoire Stable</span></div>
       <div class="kpi-grid">
@@ -83,21 +89,24 @@
       </div>
       <div class="dashboard-row">
         <div class="card-block">
-          <h3 style="margin-bottom:15px; font-size:0.95rem;">📊 Charge de Travail Globale (Workload Actif)</h3>
-          <div style="height:230px;"><canvas id="chartWorkload"></canvas></div>
+          <h3 style="font-size:0.95rem;">📊 Charge de Travail Globale (Workload Actif)</h3>
+          <!-- Graphique Local CSS Garanti Sans Blocage -->
+          <div class="custom-chart" id="localChartContainer">
+            <p style="font-size:0.8rem; color:#64748b; font-style:italic;">Aucune action active enregistrée pour le moment.</p>
+          </div>
         </div>
         <div class="card-block">
           <h3 style="margin-bottom:10px; font-size:0.95rem;">🔍 Tri Synoptique</h3>
           <p style="font-size:0.8rem; line-height:1.5; color:#64748b;">
             <strong style="color:#10b981;">🟢 LE POSITIF :</strong> Climat d'équipe favorable & succès.<br>
             <strong style="color:#0284c7;">🔵 LE NOUVEAU :</strong> Rituels initiés, derniers CR archivés.<br>
-            <strong style="color:#f43f5e;">🔴 LE NÉGATIF :</strong> Aucun dépassement budgétaire bloquant.
+            <strong style="color:#f43f5e;">🔴 LE NÉGATIF :</strong> Aucun blocage critique.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 2: REGISTRE DES ACTIONS -->
+    <!-- MODULE: REGISTRE DES ACTIONS -->
     <section id="actions" class="tab-content">
       <div class="form-box">
         <h3 style="margin-bottom:12px; font-size:0.95rem;">✏️ Ajouter une action individuelle</h3>
@@ -112,7 +121,7 @@
             </select>
             <input type="text" id="actDep" placeholder="Dépendances / Bloqué par..." class="input-field">
             <input type="number" id="actDuree" placeholder="Durée estimée (jours)..." required class="input-field">
-            <button type="submit" class="btn">✨ Enregistrer l'Action</button>
+            <button type="submit" class="btn">✨ Enregistrer</button>
           </div>
         </form>
       </div>
@@ -126,31 +135,22 @@
       </div>
     </section>
 
-    <!-- MODULE 4: MÉTÉO HEBDOMADAIRE -->
+    <!-- MODULE: MÉTÉO -->
     <section id="meteo" class="tab-content">
       <div class="form-box" style="max-w: 500px; margin: 0 auto 20px auto;">
         <h3 style="margin-bottom:12px; font-size:0.95rem;">🌤️ Saisie Météo / Pouls Hebdo</h3>
         <form id="formMeteo" onsubmit="creerMeteo(event)" style="display:flex; flex-direction:column; gap:12px;">
-          <input type="number" id="meteoMoral" min="1" max="5" placeholder="Moral de l'équipe (Échelle 1 à 5)..." required class="input-field">
+          <input type="number" id="meteoMoral" min="1" max="5" placeholder="Moral de l'équipe (1 à 5)..." required class="input-field">
           <input type="text" id="meteoPresents" placeholder="Collaborateurs présents au rituel..." required class="input-field">
-          <button type="submit" class="btn" style="background:#10b981;">🌤️ Publier le Pouls</button>
+          <button type="submit" class="btn" style="background:#10b981;">🌤 shrink Publier le Pouls</button>
         </form>
       </div>
       <div id="cardsMeteo" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:15px;"></div>
     </section>
 
-    <!-- MODULE 5: MATRICE DES RISQUES 5x5 -->
+    <!-- MODULE: RISQUES -->
     <section id="risques" class="tab-content">
       <div class="form-box">
         <h3 style="margin-bottom:12px; font-size:0.95rem;">🚨 Déclaration Proactive de Risque / Problème</h3>
         <form id="formRisque" onsubmit="creerRisque(event)">
           <div class="form-grid">
-            <input type="text" id="rskDesc" placeholder="Description de la menace..." required class="input-field">
-            <input type="text" id="rskMitigation" placeholder="Plan de mitigation préventif..." required class="input-field">
-            <input type="number" id="rskProba" min="1" max="5" placeholder="Probabilité / Urgence (1-5)..." required class="input-field">
-            <input type="number" id="rskImpact" min="1" max="5" placeholder="Impact Projet (1-5)..." required class="input-field">
-            <button type="submit" class="btn" style="background:#f43f5e;">🚨 Fixer la Menace</button>
-          </div>
-        </form>
-      </div>
-      <div class="card-block">

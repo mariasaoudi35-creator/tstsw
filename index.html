@@ -142,5 +142,19 @@
     window.addEventListener('load', () => { renderAll(); });
 
     function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display='block'; setTimeout(()=>{t.style.display='none';},2500); }
-    function switchTab(id) { document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById(id).style.display='block'; event.target.classList.add('active'); }
-    
+    function switchTab(id) { 
+  // Cache tous les contenus d'onglets
+  document.querySelectorAll('.tab-content').forEach(e => e.style.display = 'none'); 
+  // Enlève le style actif de tous les boutons
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+  // Affiche l'onglet sélectionné
+  document.getElementById(id).style.display = 'block'; 
+  
+  // Trouve le bouton cliqué et lui ajoute la classe 'active'
+  const boutons = document.querySelectorAll('.tab-btn');
+  boutons.forEach(b => {
+    if(b.getAttribute('onclick').includes(id)) {
+      b.classList.add('active');
+    }
+  });
+}

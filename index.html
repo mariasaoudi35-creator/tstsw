@@ -2,37 +2,51 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Weekly Hub - Cockpit Pro</title>
-  <!-- Chart.js chargé via CDN standard (généralement autorisé hors iframe) -->
+  <title>Weekly Hub - Cockpit 360°</title>
+  <!-- Chart.js standard pour le graphique de charge -->
   <script src="https://jsdelivr.net"></script>
   <style>
+    /* Reset & Styles de base - Thème Bleu Clair */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f7ff; color: #1e293b; padding-bottom: 60px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #f0f7ff; color: #1e293b; padding-bottom: 60px; }
+    
+    /* Navigation */
     .navbar { background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%); color: white; padding: 15px 25px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(2,132,199,0.15); }
     @media (min-width: 768px) { .navbar { flex-direction: row; } }
-    .nav-title { font-size: 1.3rem; font-weight: 700; }
+    .nav-title { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
     .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    
+    /* Boutons Onglets Réactifs */
     .tab-btn { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
     .tab-btn:hover { background: rgba(255, 255, 255, 0.25); }
-    .tab-btn.active { background: white; color: #1d4ed8; font-weight: 700; }
+    .tab-btn.active { background: white; color: #1d4ed8; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Structures de contenu */
     .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    
+    /* Composants Visuels */
     .banner { padding: 15px; border-radius: 16px; background-color: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; margin-bottom: 20px; font-weight: 600; font-size: 0.9rem; }
     .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
     @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
     .kpi-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e0f2fe; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
     .kpi-label { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
     .kpi-val { font-size: 1.8rem; font-weight: 800; margin-top: 5px; color: #0284c7; }
+    
     .dashboard-row { display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 1024px) { .dashboard-row { grid-template-columns: 2fr 1fr; } }
     .card-block { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e0f2fe; }
+    
+    /* Formulaires */
     .form-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e0f2fe; margin-bottom: 20px; }
     .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
     .input-field { width: 100%; padding: 10px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 10px; background-color: #f8fafc; outline: none; }
-    .btn { border: none; padding: 10px 18px; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer; color: white; background-color: #0284c7; }
+    .btn { border: none; padding: 10px 18px; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer; color: white; background-color: #0284c7; transition: background 0.2s; }
     .btn:hover { background-color: #0369a1; }
+    
+    /* Tableaux */
     .table-wrapper { background: white; border-radius: 16px; border: 1px solid #e0f2fe; overflow-x: auto; }
     .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
     .data-table th { background-color: #f8fafc; padding: 12px; color: #64748b; border-bottom: 1px solid #e2e8f0; }
@@ -43,118 +57,100 @@
 </head>
 <body>
 
+  <!-- BARRE DE NAVIGATION AVEC APPEL SMART DES ONGLETS -->
   <nav class="navbar">
-    <div class="nav-brand"><span style="font-size:1.5rem;">🚀</span> <span class="nav-title">Weekly Hub</span></div>
+    <div class="nav-title">🚀 <span>Weekly Hub</span></div>
     <div class="nav-tabs">
-      <button onclick="switchTab('dashboard')" class="tab-btn active">📊 Dashboard</button>
-      <button onclick="switchTab('actions')" class="tab-btn">⚡ Actions</button>
-      <button onclick="switchTab('meteo')" class="tab-btn">🌤️ Météo</button>
-      <button onclick="switchTab('risques')" class="tab-btn">⚠️ Risques</button>
-      <button onclick="switchTab('docs')" class="tab-btn">📂 Documents</button>
+      <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn active">📊 Dashboard</button>
+      <button onclick="switchTab('actions')" id="btn-actions" class="tab-btn">⚡ Actions</button>
+      <button onclick="switchTab('meteo')" id="btn-meteo" class="tab-btn">🌤️ Météo</button>
+      <button onclick="switchTab('risques')" id="btn-risques" class="tab-btn">⚠️ Risques</button>
+      <button onclick="switchTab('docs')" id="btn-docs" class="tab-btn">📂 Documents</button>
     </div>
   </nav>
 
   <main class="container">
     <div id="toast"></div>
 
-    <!-- DASHBOARD -->
+    <!-- MODULE 1 & 3: DASHBOARD -->
     <section id="dashboard" class="tab-content active">
-      <div class="banner">🎯 Trajectoire Générale : <span id="txtTendance">Trajectoire Stable</span></div>
+      <div class="banner">🎯 Analyse de la Tendance : <span id="txtTendance">Trajectoire Stable</span></div>
       <div class="kpi-grid">
         <div class="kpi-card"><p class="kpi-label">📈 Avancement Global</p><h3 class="kpi-val" id="kpiAvancement">0%</h3></div>
         <div class="kpi-card"><p class="kpi-label">⏳ Actions En Cours</p><h3 class="kpi-val" style="color:#f59e0b;" id="kpiActions">0</h3></div>
-        <div class="kpi-card"><p class="kpi-label">❤️ Moral Équipe</p><h3 class="kpi-val" style="color:#10b981;" id="kpiMoral">5/5</h3></div>
+        <div class="kpi-card"><p class="kpi-label">❤️ Climat / Moral</p><h3 class="kpi-val" style="color:#10b981;" id="kpiMoral">5/5</h3></div>
         <div class="kpi-card"><p class="kpi-label">🔥 Blocages Critiques</p><h3 class="kpi-val" style="color:#f43f5e;" id="kpiBlocages">0</h3></div>
       </div>
       <div class="dashboard-row">
         <div class="card-block">
-          <h3 style="margin-bottom:15px; font-size:0.95rem;">📊 Charge de Travail (Workload Actif)</h3>
+          <h3 style="margin-bottom:15px; font-size:0.95rem;">📊 Charge de Travail Globale (Workload Actif)</h3>
           <div style="height:230px;"><canvas id="chartWorkload"></canvas></div>
         </div>
         <div class="card-block">
           <h3 style="margin-bottom:10px; font-size:0.95rem;">🔍 Tri Synoptique</h3>
-          <p style="font-size:0.8rem; line-height:1.4; color:#64748b;">🟢 Le Positif : Climat stable.<br>🔵 Le Nouveau : Rituels initiés.<br>🔴 Le Négatif : Aucun blocage.</p>
+          <p style="font-size:0.8rem; line-height:1.5; color:#64748b;">
+            <strong style="color:#10b981;">🟢 LE POSITIF :</strong> Climat d'équipe favorable & succès.<br>
+            <strong style="color:#0284c7;">🔵 LE NOUVEAU :</strong> Rituels initiés, derniers CR archivés.<br>
+            <strong style="color:#f43f5e;">🔴 LE NÉGATIF :</strong> Aucun dépassement budgétaire bloquant.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- ACTIONS -->
+    <!-- MODULE 2: REGISTRE DES ACTIONS -->
     <section id="actions" class="tab-content">
       <div class="form-box">
-        <form id="formAction" onsubmit="ajouterAction(event)">
+        <h3 style="margin-bottom:12px; font-size:0.95rem;">✏️ Ajouter une action individuelle</h3>
+        <form id="formAction" onsubmit="creerAction(event)">
           <div class="form-grid">
-            <input type="text" id="actDesc" placeholder="Description tâche..." required class="input-field">
+            <input type="text" id="actDesc" placeholder="Description de la tâche..." required class="input-field">
             <input type="text" id="actResp" placeholder="Responsable (Nom)..." required class="input-field">
-            <select id="actAvancement" class="input-field"><option value="0">0%</option><option value="50">50%</option><option value="100">100%</option></select>
-            <input type="text" id="actDep" placeholder="Dépendances..." class="input-field">
-            <input type="number" id="actDuree" placeholder="Durée (jours)..." required class="input-field">
-            <button type="submit" class="btn">✨ Ajouter</button>
+            <select id="actAvancement" class="input-field">
+              <option value="0">0% (Non démarré)</option>
+              <option value="50">50% (En cours)</option>
+              <option value="100">100% (Terminé)</option>
+            </select>
+            <input type="text" id="actDep" placeholder="Dépendances / Bloqué par..." class="input-field">
+            <input type="number" id="actDuree" placeholder="Durée estimée (jours)..." required class="input-field">
+            <button type="submit" class="btn">✨ Enregistrer l'Action</button>
           </div>
         </form>
       </div>
-      <div class="table-wrapper"><table class="data-table"><thead><tr><th>ID</th><th>DESCRIPTION</th><th>RESPONSABLE</th><th>AVANCEMENT</th><th>DÉPENDANCE</th><th>DURÉE</th></tr></thead><tbody id="tableActions"></tbody></table></div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>CODE ID</th><th>DESCRIPTION</th><th>RESPONSABLE</th><th>AVANCEMENT</th><th>DÉPENDANCES</th><th>DURÉE</th></tr>
+          </thead>
+          <tbody id="tableActions"></tbody>
+        </table>
+      </div>
     </section>
 
-    <!-- METEO -->
+    <!-- MODULE 4: MÉTÉO HEBDOMADAIRE -->
     <section id="meteo" class="tab-content">
       <div class="form-box" style="max-w: 500px; margin: 0 auto 20px auto;">
-        <form id="formMeteo" onsubmit="ajouterMeteo(event)" style="display:flex; flex-direction:column; gap:12px;">
-          <input type="number" id="meteoMoral" min="1" max="5" placeholder="Moral équipe (1 à 5)..." required class="input-field">
-          <input type="text" id="meteoPresents" placeholder="Presents..." required class="input-field">
-          <button type="submit" class="btn" style="background:#10b981;">🌤️ Publier le pouls</button>
+        <h3 style="margin-bottom:12px; font-size:0.95rem;">🌤️ Saisie Météo / Pouls Hebdo</h3>
+        <form id="formMeteo" onsubmit="creerMeteo(event)" style="display:flex; flex-direction:column; gap:12px;">
+          <input type="number" id="meteoMoral" min="1" max="5" placeholder="Moral de l'équipe (Échelle 1 à 5)..." required class="input-field">
+          <input type="text" id="meteoPresents" placeholder="Collaborateurs présents au rituel..." required class="input-field">
+          <button type="submit" class="btn" style="background:#10b981;">🌤️ Publier le Pouls</button>
         </form>
       </div>
       <div id="cardsMeteo" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:15px;"></div>
     </section>
 
-    <!-- RISQUES -->
+    <!-- MODULE 5: MATRICE DES RISQUES 5x5 -->
     <section id="risques" class="tab-content">
       <div class="form-box">
-        <form id="formRisque" onsubmit="ajouterRisque(event)">
+        <h3 style="margin-bottom:12px; font-size:0.95rem;">🚨 Déclaration Proactive de Risque / Problème</h3>
+        <form id="formRisque" onsubmit="creerRisque(event)">
           <div class="form-grid">
             <input type="text" id="rskDesc" placeholder="Description de la menace..." required class="input-field">
-            <input type="text" id="rskMitigation" placeholder="Plan d'atténuation..." required class="input-field">
-            <input type="number" id="rskProba" min="1" max="5" placeholder="Probabilité (1-5)..." required class="input-field">
-            <input type="number" id="rskImpact" min="1" max="5" placeholder="Impact (1-5)..." required class="input-field">
-            <button type="submit" class="btn" style="background:#f43f5e;">🚨 Signaler</button>
+            <input type="text" id="rskMitigation" placeholder="Plan de mitigation préventif..." required class="input-field">
+            <input type="number" id="rskProba" min="1" max="5" placeholder="Probabilité / Urgence (1-5)..." required class="input-field">
+            <input type="number" id="rskImpact" min="1" max="5" placeholder="Impact Projet (1-5)..." required class="input-field">
+            <button type="submit" class="btn" style="background:#f43f5e;">🚨 Fixer la Menace</button>
           </div>
         </form>
       </div>
-      <div class="card-block"><div id="listeRisques" style="display:flex; flex-direction:column; gap:10px;"></div></div>
-    </section>
-
-    <!-- DOCUMENTS -->
-    <section id="docs" class="tab-content">
-      <div class="form-box">
-        <form id="formDoc" onsubmit="ajouterDoc(event)" style="display:flex; flex-direction:column; gap:12px;">
-          <input type="text" id="docTitre" placeholder="Titre de la ressource..." required class="input-field">
-          <input type="url" id="docLien" placeholder="Lien URL..." required class="input-field">
-          <textarea id="docCR" placeholder="Compte rendu..." required class="input-field" rows="3"></textarea>
-          <button type="submit" class="btn" style="background:#475569;">🗂️ Archiver</button>
-        </form>
-      </div>
-      <div id="listeDocs" style="display:flex; flex-direction:column; gap:10px;"></div>
-    </section>
-  </main>
-
-  <script>
-    let chartInstance = null;
-    window.addEventListener('load', () => { renderAll(); });
-
-    function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display='block'; setTimeout(()=>{t.style.display='none';},2500); }
-    function switchTab(id) { 
-  // Cache tous les contenus d'onglets
-  document.querySelectorAll('.tab-content').forEach(e => e.style.display = 'none'); 
-  // Enlève le style actif de tous les boutons
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-  // Affiche l'onglet sélectionné
-  document.getElementById(id).style.display = 'block'; 
-  
-  // Trouve le bouton cliqué et lui ajoute la classe 'active'
-  const boutons = document.querySelectorAll('.tab-btn');
-  boutons.forEach(b => {
-    if(b.getAttribute('onclick').includes(id)) {
-      b.classList.add('active');
-    }
-  });
-}
+      <div class="card-block">
